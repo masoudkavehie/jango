@@ -9,7 +9,9 @@ volumes:
     name: traefik-acme
   nexus-data:
     name: nexus-data
-
+  nginx-data:
+    name: nginx-data
+  jenkins-data:
 services:
   traefik:
     image: traefik:v2.4.8
@@ -44,18 +46,17 @@ services:
       - ./traefik:/traefik
     networks:
       - default
-
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web_net"
       - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.devopshobbieslearning.com`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.masoudkaveh.ir`)"
       - "traefik.http.routers.traefik.middlewares=https-redirect"
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.web-auth.basicauth.users=user:$$apr1$$QpkypDvQ$$FjJgBGyX/By8agkOCUvDo."
       - "traefik.http.routers.traefik-secure.middlewares=web-auth"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.devopshobbieslearning.com`)"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.masoudkaveh.ir`)"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.options=default"
       - "traefik.http.routers.traefik-secure.tls.certresolver=mycert"
@@ -70,41 +71,102 @@ services:
     networks:
       - default
     labels:
-     - "traefik.enable=true"
-     - "traefik.docker.network=web_net"
-     - "traefik.http.routers.repo.entrypoints=http"
-     - "traefik.http.routers.repo.rule=Host(`registry.devopshobbieslearning.com`)"
-     - "traefik.http.routers.repo.service=repo-secure"
-     - "traefik.http.routers.repo.middlewares=https-redirect"
-     - "traefik.http.routers.repo-secure.entrypoints=https"
-     - "traefik.http.routers.repo-secure.rule=Host(`registry.devopshobbieslearning.com`)"
-     - "traefik.http.routers.repo-secure.tls=true"
-     - "traefik.http.routers.repo-secure.tls.options=default"
-     - "traefik.http.routers.repo-secure.tls.certresolver=mycert"
-     - "traefik.http.routers.repo-secure.service=repo-secure"
-     - "traefik.http.services.repo-secure.loadbalancer.server.port=8081"
+      - "traefik.enable=true"
+      - "traefik.docker.network=web_net"
+      - "traefik.http.routers.repo.entrypoints=http"
+      - "traefik.http.routers.repo.rule=Host(`registry.masoudkaveh.ir`)"
+      - "traefik.http.routers.repo.service=repo-secure"
+      - "traefik.http.routers.repo.middlewares=https-redirect"
+      - "traefik.http.routers.repo-secure.entrypoints=https"
+      - "traefik.http.routers.repo-secure.rule=Host(`registry.masoudkaveh.ir`)"
+      - "traefik.http.routers.repo-secure.tls=true"
+      - "traefik.http.routers.repo-secure.tls.options=default"
+      - "traefik.http.routers.repo-secure.tls.certresolver=mycert"
+      - "traefik.http.routers.repo-secure.service=repo-secure"
+      - "traefik.http.services.repo-secure.loadbalancer.server.port=8081"
 
-     - "traefik.http.routers.nexusdocker.entrypoints=http"
-     - "traefik.http.routers.nexusdocker.rule=Host(`docker.devopshobbieslearning.com`)"
-     - "traefik.http.routers.nexusdocker.middlewares=https-redirect"
-     - "traefik.http.routers.nexusdocker-secure.entrypoints=https"
-     - "traefik.http.routers.nexusdocker.service=nexusdocker-secure"
-     - "traefik.http.routers.nexusdocker-secure.rule=Host(`docker.devopshobbieslearning.com`)"
-     - "traefik.http.routers.nexusdocker-secure.tls=true"
-     - "traefik.http.routers.nexusdocker-secure.tls.options=default"
-     - "traefik.http.routers.nexusdocker-secure.tls.certresolver=mycert"
-     - "traefik.http.routers.nexusdocker-secure.service=nexusdocker-secure"
-     - "traefik.http.services.nexusdocker-secure.loadbalancer.server.port=8085"
+      - "traefik.http.routers.nexusdocker.entrypoints=http"
+      - "traefik.http.routers.nexusdocker.rule=Host(`docker.masoudkaveh.ir`)"
+      - "traefik.http.routers.nexusdocker.middlewares=https-redirect"
+      - "traefik.http.routers.nexusdocker-secure.entrypoints=https"
+      - "traefik.http.routers.nexusdocker.service=nexusdocker-secure"
+      - "traefik.http.routers.nexusdocker-secure.rule=Host(`docker.masoudkaveh.ir`)"
+      - "traefik.http.routers.nexusdocker-secure.tls=true"
+      - "traefik.http.routers.nexusdocker-secure.tls.options=default"
+      - "traefik.http.routers.nexusdocker-secure.tls.certresolver=mycert"
+      - "traefik.http.routers.nexusdocker-secure.service=nexusdocker-secure"
+      - "traefik.http.services.nexusdocker-secure.loadbalancer.server.port=8085"
 
-     - "traefik.http.routers.nexusmirror.entrypoints=http"
-     - "traefik.http.routers.nexusmirror.rule=Host(`nexus.devopshobbieslearning.com`)"
-     - "traefik.http.routers.nexusmirror.middlewares=https-redirect"
-     - "traefik.http.routers.nexusmirror.service=nexusmirror-secure"
-     - "traefik.http.routers.nexusmirror-secure.entrypoints=https"
-     - "traefik.http.routers.nexusmirror-secure.rule=Host(`nexus.devopshobbieslearning.com`)"
-     - "traefik.http.routers.nexusmirror-secure.tls=true"
-     - "traefik.http.routers.nexusmirror-secure.tls.options=default"
-     - "traefik.http.routers.nexusmirror-secure.tls.certresolver=mycert"
-     - "traefik.http.routers.nexusmirror-secure.service=nexusmirror-secure"
-     - "traefik.http.services.nexusmirror-secure.loadbalancer.server.port=8084"
+      - "traefik.http.routers.nexusmirror.entrypoints=http"
+      - "traefik.http.routers.nexusmirror.rule=Host(`nexus.masoudkaveh.ir`)"
+      - "traefik.http.routers.nexusmirror.middlewares=https-redirect"
+      - "traefik.http.routers.nexusmirror.service=nexusmirror-secure"
+      - "traefik.http.routers.nexusmirror-secure.entrypoints=https"
+      - "traefik.http.routers.nexusmirror-secure.rule=Host(`nexus.maosudkaveh.ir`)"
+      - "traefik.http.routers.nexusmirror-secure.tls=true"
+      - "traefik.http.routers.nexusmirror-secure.tls.options=default"
+      - "traefik.http.routers.nexusmirror-secure.tls.certresolver=mycert"
+      - "traefik.http.routers.nexusmirror-secure.service=nexusmirror-secure"
+      - "traefik.http.services.nexusmirror-secure.loadbalancer.server.port=8084"
 
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: always
+    volumes:
+      - jenkins-data:/var/jenkins_home
+    networks:
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web_net"
+      - "traefik.http.routers.jenkins.entrypoints=http"
+      - "traefik.http.routers.jenkins.rule=Host(`jenkins.masoudkaveh.ir`)"
+      - "traefik.http.routers.jenkins.middlewares=https-redirect"
+      - "traefik.http.routers.jenkins-secure.entrypoints=https"
+      - "traefik.http.routers.jenkins-secure.rule=Host(`jenkins.masoudkaveh.ir`)"
+      - "traefik.http.routers.jenkins-secure.tls=true"
+      - "traefik.http.routers.jenkins-secure.tls.options=default"
+      - "traefik.http.routers.jenkins-secure.tls.certresolver=mycert"
+      - "traefik.http.routers.jenkins-secure.service=jenkins-secure"
+      - "traefik.http.services.jenkins-secure.loadbalancer.server.port=8080"
+
+  monitoring:
+    image: prom/prometheus:latest
+    container_name: monitoring
+    restart: always
+    networks:
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web_net"
+      - "traefik.http.routers.monitoring.entrypoints=http"
+      - "traefik.http.routers.monitoring.rule=Host(`masoudkaveh.ir`)"
+      - "traefik.http.routers.monitoring.middlewares=https-redirect"
+      - "traefik.http.routers.monitoring-secure.entrypoints=https"
+      - "traefik.http.routers.monitoring-secure.rule=Host(`masoudkaveh.ir`)"
+      - "traefik.http.routers.monitoring-secure.tls=true"
+      - "traefik.http.routers.monitoring-secure.tls.options=default"
+      - "traefik.http.routers.monitoring-secure.tls.certresolver=mycert"
+      - "traefik.http.routers.monitoring-secure.service=monitoring-secure"
+      - "traefik.http.services.monitoring-secure.loadbalancer.server.port=9090"
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    networks:
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web_net"
+      - "traefik.http.routers.grafana.entrypoints=http"
+      - "traefik.http.routers.grafana.rule=Host(`masoudkaveh.ir`)"
+      - "traefik.http.routers.grafana.middlewares=https-redirect"
+      - "traefik.http.routers.grafana-secure.entrypoints=https"
+      - "traefik.http.routers.grafana-secure.rule=Host(`masoudkaveh.ir`)"
+      - "traefik.http.routers.grafana-secure.tls=true"
+      - "traefik.http.routers.grafana-secure.tls.options=default"
+      - "traefik.http.routers.grafana-secure.tls.certresolver=mycert"
+      - "traefik.http.routers.grafana-secure.service=grafana-secure"
+      - "traefik.http.services.grafana-secure.loadbalancer.server.port=3000"
